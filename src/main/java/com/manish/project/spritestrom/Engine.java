@@ -10,12 +10,9 @@ public class Engine {
 
     public Engine(){
         window = new GameWindow("Primary Window", 800, 600).getWindow();
-        gameLoop = new GameLoop(this, 120);
-
-        running = true;
+        gameLoop = new GameLoop(this, 120, 200);
 
         gameLoop.run();
-        stop();
     }
 
     public void stop(){
@@ -26,8 +23,7 @@ public class Engine {
 
     }
 
-    public void update(double deltaTime){
-        
+    public void update(){
     }
 
     public boolean isRunning() {

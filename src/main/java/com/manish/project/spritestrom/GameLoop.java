@@ -2,34 +2,58 @@ package com.manish.project.spritestrom;
 
 import org.lwjgl.glfw.GLFW;
 
-public class GameLoop implements Runnable{
-    private final long TARGET_TIME;
+public class GameLoop {
+    private final double timePerFrame;
+    private final double timePerUpdate;
 
     private final Engine engine;
 
-    public GameLoop(Engine engine, int fps){
+    public GameLoop(Engine engine, int fps, int ups){
         this.engine = engine;
-        this.TARGET_TIME = 1000000000 / fps;
+
+        timePerFrame = 1000000000.0 / fps;
+        timePerUpdate = 1000000000.0 / ups;
     }
 
-    @Override
     public void run() {
-        long lastTime = System.nanoTime();
-        double unprocessedTime = 0;
+        engine.setRunning(true);
+
+        long previousTime = System.nanoTime();
+
+        int frames = 0;
+        int updates = 0;
+        long lastCheck = System.currentTimeMillis();
+
+        double deltaU = 0;
+        double deltaF = 0;
+
 
         while (engine.isRunning()){
-            long now = System.nanoTime();
-            long elapsedTime = now - lastTime;
+            long currentTime = System.nanoTime();
 
-            lastTime = now;
-            unprocessedTime += elapsedTime / (double) TARGET_TIME;
+            deltaU += (currentTime - previousTime) / timePerUpdate;
+            deltaF += (currentTime - previousTime) / timePerFrame;
+            previousTime = currentTime;
 
-            while (unprocessedTime >= 1) {
-                engine.update(TARGET_TIME / 1000000000.0); // Pass delta time to update function
-                unprocessedTime--;
+            if (deltaU >= 1) {
+                engine.update();
+                updates++;
+                deltaU--;
             }
 
-            engine.render();
+            if (deltaF >= 1) {
+                engine.render();
+                frames++;
+                deltaF--;
+            }
+
+            if (System.currentTimeMillis() - lastCheck >= 1000) {
+                lastCheck = System.currentTimeMillis();
+                System.out.println("FPS: " + frames + " | UPS: " + updates);
+                frames = 0;
+                updates = 0;
+
+            }
 
             // Swap buffers
             GLFW.glfwSwapBuffers(engine.getWindow());
@@ -40,8 +64,8 @@ public class GameLoop implements Runnable{
             // Check if the window should close
             if (GLFW.glfwWindowShouldClose(engine.getWindow())) {
                 engine.setRunning(false);
+                engine.stop();
             }
-
         }
     }
 }
