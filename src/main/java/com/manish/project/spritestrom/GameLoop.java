@@ -6,17 +6,17 @@ public class GameLoop {
     private final double timePerFrame;
     private final double timePerUpdate;
 
-    private final Engine engine;
+    private final GameEngine gameEngine;
 
-    public GameLoop(Engine engine, int fps, int ups){
-        this.engine = engine;
+    public GameLoop(GameEngine gameEngine, int fps, int ups){
+        this.gameEngine = gameEngine;
 
         timePerFrame = 1000000000.0 / fps;
         timePerUpdate = 1000000000.0 / ups;
     }
 
     public void run() {
-        engine.setRunning(true);
+        gameEngine.setRunning(true);
 
         long previousTime = System.nanoTime();
 
@@ -28,7 +28,7 @@ public class GameLoop {
         double deltaF = 0;
 
 
-        while (engine.isRunning()){
+        while (gameEngine.isRunning()){
             long currentTime = System.nanoTime();
 
             deltaU += (currentTime - previousTime) / timePerUpdate;
@@ -36,13 +36,13 @@ public class GameLoop {
             previousTime = currentTime;
 
             if (deltaU >= 1) {
-                engine.update();
+                gameEngine.update();
                 updates++;
                 deltaU--;
             }
 
             if (deltaF >= 1) {
-                engine.render();
+                gameEngine.render();
                 frames++;
                 deltaF--;
             }
@@ -56,15 +56,15 @@ public class GameLoop {
             }
 
             // Swap buffers
-            GLFW.glfwSwapBuffers(engine.getWindow());
+            GLFW.glfwSwapBuffers(gameEngine.getWindow());
 
             // Poll for events
             GLFW.glfwPollEvents();
 
             // Check if the window should close
-            if (GLFW.glfwWindowShouldClose(engine.getWindow())) {
-                engine.setRunning(false);
-                engine.stop();
+            if (GLFW.glfwWindowShouldClose(gameEngine.getWindow())) {
+                gameEngine.setRunning(false);
+                gameEngine.stop();
             }
         }
     }

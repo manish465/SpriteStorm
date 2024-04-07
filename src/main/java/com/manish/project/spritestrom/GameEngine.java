@@ -2,17 +2,17 @@ package com.manish.project.spritestrom;
 
 import org.lwjgl.glfw.GLFW;
 
-public class Engine {
-    public GameLoop gameLoop;
-
+public class GameEngine {
     private final long window;
     private boolean running;
 
-    public Engine(){
+    public GameEngine(){
         window = new GameWindow("Primary Window", 800, 600).getWindow();
-        gameLoop = new GameLoop(this, 120, 200);
+        GameLoop gameLoop = new GameLoop(this, 120, 200);
 
+        // no return
         gameLoop.run();
+        stop();
     }
 
     public void stop(){
@@ -20,10 +20,11 @@ public class Engine {
     }
 
     public void render(){
-
+        SceneManager.get().getCurrentScene().render();
     }
 
     public void update(){
+        SceneManager.get().getCurrentScene().update();
     }
 
     public boolean isRunning() {

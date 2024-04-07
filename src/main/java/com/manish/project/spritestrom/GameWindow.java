@@ -21,6 +21,11 @@ public class GameWindow {
             throw new RuntimeException("Failed to create the GLFW window");
         }
 
+        GLFW.glfwSetCursorPosCallback(window, MouseListener::mousePosCallback);
+        GLFW.glfwSetMouseButtonCallback(window, MouseListener::mouseButtonCallback);
+        GLFW.glfwSetScrollCallback(window, MouseListener::mouseScrollCallback);
+        GLFW.glfwSetKeyCallback(window, KeyListener::keyCallback);
+
         // Make the OpenGL context current
         GLFW.glfwMakeContextCurrent(window);
         GL.createCapabilities();
